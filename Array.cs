@@ -333,6 +333,90 @@ namespace LeetCode
         }
         #endregion
 
+        #region 283. Move Zeroes
+        //Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of the non-zero elements.
+
+        //For example, given nums = [0, 1, 0, 3, 12], after calling your function, nums should be[1, 3, 12, 0, 0].
+
+        //Note:
+        //You must do this in-place without making a copy of the array.
+        //Minimize the total number of operations.
+        //Credits:
+        //Special thanks to @jianchao.li.fighter for adding this problem and creating all test cases.
+        public static void MoveZeroes(int[] nums)
+        {
+            int count = 0;
+            for (int i = nums.Length - 1; i >= 0; i--)
+            {
+                if (nums[i] == 0)
+                {
+                    for (int j = i + 1; j < nums.Length - count; j++)
+                    {
+                        nums[j - 1] = nums[j];
+                    }
+                    nums[nums.Length - 1 - count] = 0;
+                    count++;
+                }
+            }
+        }
+        #endregion
+
+        #region 448. Find All Numbers Disappeared in an Array
+        //Given an array of integers where 1 ≤ a[i] ≤ n(n = size of array), some elements appear twice and others appear once.
+
+        //Find all the elements of [1, n] inclusive that do not appear in this array.
+
+        //Could you do it without extra space and in O(n) runtime? You may assume the returned list does not count as extra space.
+        public static IList<int> FindDisappearedNumbers(int[] nums)
+        {
+            var result = new List<int>();
+            int n = nums.Length;
+            for (int i = 0; i < nums.Length; i++)
+            {
+                nums[(nums[i] - 1) % n] += n;
+            }
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (nums[i] <= n)
+                    result.Add(i + 1);
+            }
+            return result;
+        }
+        #endregion
+
+        #region 485. Max Consecutive Ones
+        //Given a binary array, find the maximum number of consecutive 1s in this array.
+
+        //Example 1:
+        //Input: [1,1,0,1,1,1]
+        //        Output: 3
+        //Explanation: The first two digits or the last three digits are consecutive 1s.
+        //    The maximum number of consecutive 1s is 3.
+        //Note:
+
+        //The input array will only contain 0 and 1.
+        //The length of input array is a positive integer and will not exceed 10,000
+        public static int FindMaxConsecutiveOnes(int[] nums)
+        {
+            var max = 0;
+            var currentSum = 0;
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (nums[i] == 1)
+                    currentSum++;
+                else
+                {
+                    if (currentSum > max)
+                        max = currentSum;
+                    currentSum = 0;
+                }
+            }
+            if (currentSum > max)
+                max = currentSum;
+            return max;
+        }
+        #endregion
+
         #region 561. Array Partition I
         //Given an array of 2n integers, your task is to group these integers into n pairs of integer, say(a1, b1), (a2, b2), ..., (an, bn) which makes sum of min(ai, bi) for all i from 1 to n as large as possible.
 
@@ -438,7 +522,170 @@ namespace LeetCode
         }
         #endregion
 
+        #region 674. Longest Continuous Increasing Subsequence
+        //Given an unsorted array of integers, find the length of longest continuous increasing subsequence(subarray).
 
+        //Example 1:
+        //Input: [1,3,5,4,7]
+        //        Output: 3
+        //Explanation: The longest continuous increasing subsequence is [1,3,5], its length is 3. 
+        //Even though[1, 3, 5, 7] is also an increasing subsequence, it's not a continuous one where 5 and 7 are separated by 4. 
+        //Example 2:
+        //Input: [2,2,2,2,2]
+        //        Output: 1
+        //Explanation: The longest continuous increasing subsequence is [2], its length is 1. 
+        //Note: Length of the array will not exceed 10,000.
+        public static int FindLengthOfLCIS(int[] nums)
+        {
+            if (nums.Length == 0)
+                return 0;
+            int result = 0;
+            int currentMax = 1;
+            for (int i = 1; i < nums.Length; i++)
+            {
+                if (nums[i] > nums[i - 1])
+                    currentMax++;
+                else
+                {
+                    if (currentMax > result)
+                        result = currentMax;
+                    currentMax = 1;
+                }
+
+            }
+            if (currentMax > result)
+                result = currentMax;
+            return result;
+        }
+        #endregion  
+
+        #region 695. Max Area of Island
+        //Given a non-empty 2D array grid of 0's and 1's, an island is a group of 1's (representing land) connected 4-directionally (horizontal or vertical.) You may assume all four edges of the grid are surrounded by water.
+
+        //Find the maximum area of an island in the given 2D array. (If there is no island, the maximum area is 0.)
+
+        //Example 1:
+        //[[0,0,1,0,0,0,0,1,0,0,0,0,0],
+        // [0,0,0,0,0,0,0,1,1,1,0,0,0],
+        // [0,1,1,0,1,0,0,0,0,0,0,0,0],
+        // [0,1,0,0,1,1,0,0,1,0,1,0,0],
+        // [0,1,0,0,1,1,0,0,1,1,1,0,0],
+        // [0,0,0,0,0,0,0,0,0,0,1,0,0],
+        // [0,0,0,0,0,0,0,1,1,1,0,0,0],
+        // [0,0,0,0,0,0,0,1,1,0,0,0,0]]
+        //Given the above grid, return 6. Note the answer is not 11, because the island must be connected 4-directionally.
+        //Example 2:
+        //[[0,0,0,0,0,0,0,0]]
+        //Given the above grid, return 0.
+        //Note: The length of each dimension in the given grid does not exceed 50.
+        public static int MaxAreaOfIsland(int[,] grid)
+        {
+            var max = 0;
+            for (int row = 0; row < grid.GetLength(0); row++)
+            {
+                for (int column = 0; column < grid.GetLength(1); column++)
+                {
+                    if (grid[row, column] == 1)
+                    {
+                        var area = MaxAreaOfIsland(grid, row, column);
+                        max = max > area ? max : area;
+                    }
+
+
+                }
+            }
+            return max;
+        }
+
+        public static int MaxAreaOfIsland(int[,] grid, int row, int column)
+        {
+            if (row < 0 || row >= grid.GetLength(0) || column < 0 || column >= grid.GetLength(1) || grid[row, column] == 0)
+            {
+                return 0;
+            }
+            grid[row, column] = 0;
+            return 1 + MaxAreaOfIsland(grid, row - 1, column) + MaxAreaOfIsland(grid, row + 1, column) + MaxAreaOfIsland(grid, row, column - 1)
+                + MaxAreaOfIsland(grid, row, column + 1);
+        }
+        #endregion
+
+        #region 717. 1-bit and 2-bit Characters
+        //We have two special characters.The first character can be represented by one bit 0. The second character can be represented by two bits(10 or 11).
+
+        //Now given a string represented by several bits.Return whether the last character must be a one-bit character or not.The given string will always end with a zero.
+
+        //Example 1:
+        //Input: 
+        //bits = [1, 0, 0]
+        //Output: True
+        //Explanation: 
+        //The only way to decode it is two-bit character and one-bit character. So the last character is one-bit character.
+        //Example 2:
+        //Input: 
+        //bits = [1, 1, 1, 0]
+        //Output: False
+        //Explanation: 
+        //The only way to decode it is two-bit character and two-bit character. So the last character is NOT one-bit character.
+        //Note:
+
+        //1 <= len(bits) <= 1000.
+        //bits[i] is always 0 or 1.
+        public static bool IsOneBitCharacter(int[] bits)
+        {
+            int n = bits.Length;
+            int position = 0;
+            while (position < n - 1)
+            {
+                if (bits[position] == 0)
+                    position++;
+                else
+                    position += 2;
+            }
+            return position == n - 1;
+
+        }
+        #endregion
+
+        #region 747. Largest Number At Least Twice of Others
+        //In a given integer array nums, there is always exactly one largest element.
+
+        //Find whether the largest element in the array is at least twice as much as every other number in the array.
+
+        //If it is, return the index of the largest element, otherwise return -1.
+
+        //Example 1:
+        //Input: nums = [3, 6, 1, 0]
+        //Output: 1
+        //Explanation: 6 is the largest integer, and for every other number in the array x,
+        //6 is more than twice as big as x.The index of value 6 is 1, so we return 1.
+        //Example 2:
+        //Input: nums = [1, 2, 3, 4]
+        //Output: -1
+        //Explanation: 4 isn't at least as big as twice the value of 3, so we return -1.
+        //Note:
+        //nums will have a length in the range [1, 50].
+        //Every nums[i] will be an integer in the range [0, 99].
+        public static int DominantIndex(int[] nums)
+        {
+            int max = -1; int maxIndex = -1;
+            int secMax = -1;
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (nums[i] > max)
+                {
+                    secMax = max;
+                    max = nums[i];
+                    maxIndex = i;
+                }
+                if (nums[i] > secMax && nums[i] < max)
+                    secMax = nums[i];
+            }
+            if (max >= secMax * 2)
+                return maxIndex;
+            else
+                return -1;
+        }
+        #endregion
     }
 
     public class ListNode
