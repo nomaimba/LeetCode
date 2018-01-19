@@ -300,6 +300,41 @@ namespace LeetCode
         }
         #endregion
 
+        #region 121. Best Time to Buy and Sell Stock
+        //Say you have an array for which the ith element is the price of a given stock on day i.
+
+        //If you were only permitted to complete at most one transaction(ie, buy one and sell one share of the stock), design an algorithm to find the maximum profit.
+        public static int MaxProfit1(int[] prices)
+        {
+            int maxCur = 0, maxSoFar = 0;
+            for (int i = 1; i < prices.Length; i++)
+            {
+                maxCur += prices[i] - prices[i - 1];
+                maxCur = 0 > maxCur ? 0 : maxCur;
+                maxSoFar = maxCur > maxSoFar ? maxCur : maxSoFar;
+            }
+            return maxSoFar;
+        }
+        #endregion
+
+        #region 122. Best Time to Buy and Sell Stock II
+        //Say you have an array for which the ith element is the price of a given stock on day i.
+
+        //Design an algorithm to find the maximum profit.You may complete as many transactions as you like (ie, buy one and sell one share of the stock multiple times). However, you may not engage in multiple transactions at the same time(ie, you must sell the stock before you buy again).
+        public static int MaxProfit2(int[] prices)
+        {
+            int result = 0;
+            for (int i = 1; i < prices.Length; i++)
+            {
+                if (prices[i] - prices[i - 1] > 0)
+                    result += prices[i] - prices[i - 1];
+            }
+
+
+            return result;
+        }
+        #endregion 
+
         #region 152. Maximum Product Subarray
         //Find the contiguous subarray within an array(containing at least one number) which has the largest product.
 
@@ -332,6 +367,33 @@ namespace LeetCode
             return ans;
         }
         #endregion
+
+        #region 167. Two Sum II - Input array is sorted
+        //Given an array of integers that is already sorted in ascending order, find two numbers such that they add up to a specific target number.
+
+        //The function twoSum should return indices of the two numbers such that they add up to the target, where index1 must be less than index2.Please note that your returned answers (both index1 and index2) are not zero-based.
+
+        //You may assume that each input would have exactly one solution and you may not use the same element twice.
+
+        //Input: numbers={ 2, 7, 11, 15}, target=9
+        //Output: index1=1, index2=2
+        public static int[] TwoSum(int[] numbers, int target)
+        {
+            var dics = new Dictionary<int, int>();
+            for (int i = 0; i < numbers.Length; i++)
+            {
+                if (dics.ContainsKey(numbers[i]))
+                {
+                    return new int[] { dics[numbers[i]] + 1, i + 1 };
+                }
+                else
+                {
+                    dics[target - numbers[i]] = i;
+                }
+            }
+            return null;
+        }
+        #endregion 
 
         #region 283. Move Zeroes
         //Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of the non-zero elements.
@@ -645,6 +707,57 @@ namespace LeetCode
 
         }
         #endregion
+
+        #region 744. Find Smallest Letter Greater Than Target
+        //Given a list of sorted characters letters containing only lowercase letters, and given a target letter target, find the smallest element in the list that is larger than the given target.
+
+        //Letters also wrap around.For example, if the target is target = 'z' and letters = ['a', 'b'], the answer is 'a'.
+
+        //Examples:
+        //Input:
+        //letters = ["c", "f", "j"]
+        //target = "a"
+        //Output: "c"
+
+        //Input:
+        //letters = ["c", "f", "j"]
+        //target = "c"
+        //Output: "f"
+
+        //Input:
+        //letters = ["c", "f", "j"]
+        //target = "d"
+        //Output: "f"
+
+        //Input:
+        //letters = ["c", "f", "j"]
+        //target = "g"
+        //Output: "j"
+
+        //Input:
+        //letters = ["c", "f", "j"]
+        //target = "j"
+        //Output: "c"
+
+        //Input:
+        //letters = ["c", "f", "j"]
+        //target = "k"
+        //Output: "c"
+        //Note:
+        //letters has a length in range[2, 10000].
+        //letters consists of lowercase letters, and contains at least 2 unique letters.
+        //target is a lowercase letter.
+        public static char NextGreatestLetter(char[] letters, char target)
+        {
+
+            foreach (var letter in letters)
+            {
+                if (letter > target)
+                    return letter;
+            }
+            return letters[0];
+        }
+        #endregion 
 
         #region 747. Largest Number At Least Twice of Others
         //In a given integer array nums, there is always exactly one largest element.
