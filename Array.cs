@@ -300,6 +300,65 @@ namespace LeetCode
         }
         #endregion
 
+        #region 88. Merge Sorted Array
+        //Given two sorted integer arrays nums1 and nums2, merge nums2 into nums1 as one sorted array.
+
+        //Note:
+        //You may assume that nums1 has enough space(size that is greater or equal to m + n) to hold additional elements from nums2.The number of elements initialized in nums1 and nums2 are m and n respectively.
+        public static void Merge(int[] nums1, int m, int[] nums2, int n)
+        {
+            int i = m - 1, j = n - 1, k = m + n - 1;
+            while (i > -1 && j > -1) nums1[k--] = (nums1[i] > nums2[j]) ? nums1[i--] : nums2[j--];
+            while (j > -1) nums1[k--] = nums2[j--];
+        }
+
+        #endregion
+
+        #region 118. Pascal's Triangle
+        //Given numRows, generate the first numRows of Pascal's triangle.
+
+        //For example, given numRows = 5,
+        //Return
+
+        //[
+        //     [1],
+        //    [1,1],
+        //   [1,2,1],
+        //  [1,3,3,1],
+        // [1,4,6,4,1]
+        //]
+        public static IList<IList<int>> Generate(int numRows)
+        {
+            var result = new List<IList<int>>();
+            for (int i = 0; i < numRows; i++)
+            {
+                List<int> arr = new List<int>();
+                for (int j = 0; j < i + 1; j++)
+                {
+                    if (i == 0)
+                    {
+                        arr.Add(j + 1);
+                    }
+                    else
+                    {
+                        int value = 0;
+                        if (j - 1 >= 0 && result[i - 1].Count > j - 1)
+                        {
+                            value += result[i - 1][j - 1];
+                        }
+                        if (result[i - 1].Count > j)
+                        {
+                            value += result[i - 1][j];
+                        }
+                        arr.Add(value);
+                    }
+                }
+                result.Add(arr);
+            }
+            return result;
+        }
+        #endregion 
+
         #region 121. Best Time to Buy and Sell Stock
         //Say you have an array for which the ith element is the price of a given stock on day i.
 
@@ -377,7 +436,7 @@ namespace LeetCode
 
         //Input: numbers={ 2, 7, 11, 15}, target=9
         //Output: index1=1, index2=2
-        public static int[] TwoSum(int[] numbers, int target)
+        public static int[] TwoSum2(int[] numbers, int target)
         {
             var dics = new Dictionary<int, int>();
             for (int i = 0; i < numbers.Length; i++)
