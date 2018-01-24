@@ -357,7 +357,45 @@ namespace LeetCode
             }
             return result;
         }
-        #endregion 
+        #endregion
+
+        #region 119. Pascal's Triangle II
+        //Given an index k, return the kth row of the Pascal's triangle.
+
+        //For example, given k = 3,
+        //Return[1, 3, 3, 1].
+
+        //Note:
+        //Could you optimize your algorithm to use only O(k) extra space?
+        public static IList<int> GetRow(int rowIndex)
+        {
+            var last = new List<int>();
+            var result = new List<int>();
+            for (int i = 0; i < rowIndex + 1; i++)
+            {
+                last.Clear();
+                last.InsertRange(0, result);
+                result.Clear();
+                for (int j = 0; j < i + 1; j++)
+                {
+                    int value = 0;
+                    if (j - 1 >= 0 && last.Count >= j)
+                    {
+                        value += last[j - 1];
+                    }
+                    if (last.Count >= j + 1)
+                    {
+                        value += last[j];
+                    }
+                    if (value == 0)
+                        value = 1;
+                    result.Add(value);
+                }
+
+            }
+            return result;
+        }
+        #endregion
 
         #region 121. Best Time to Buy and Sell Stock
         //Say you have an array for which the ith element is the price of a given stock on day i.
@@ -452,7 +490,97 @@ namespace LeetCode
             }
             return null;
         }
-        #endregion 
+        #endregion
+
+        #region 189. Rotate Array
+        //Rotate an array of n elements to the right by k steps.
+
+        //For example, with n = 7 and k = 3, the array [1,2,3,4,5,6,7] is rotated to [5,6,7,1,2,3,4].
+
+        //Note:
+        //Try to come up as many solutions as you can, there are at least 3 different ways to solve this problem.
+
+        //[show hint]
+
+        //Related problem: Reverse Words in a String II
+
+        //Credits:
+        //Special thanks to @Freezen for adding this problem and creating all test cases.
+        public static void Rotate(int[] nums, int k)
+        {
+            k = k % nums.Length;
+            if (k == 0)
+                return;
+            var move = new int[k];
+            int count = k;
+            for (int i = nums.Length - 1; count > 0; i--)
+            {
+                move[--count] = nums[i];
+            }
+            for (int i = nums.Length - k - 1; i >= 0; i--)
+            {
+                nums[i + k] = nums[i];
+            }
+            for (int i = 0; i < move.Length; i++)
+            {
+                nums[i] = move[i];
+            }
+        }
+        #endregion
+
+        #region 198. House Robber
+        //You are a professional robber planning to rob houses along a street.Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security system connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
+
+        //Given a list of non-negative integers representing the amount of money of each house, determine the maximum amount of money you can rob tonight without alerting the police.
+        public static int Rob(int[] nums)
+        {
+            int n = nums.Length;
+            int oddSum = 0;
+            int evenSum = 0;
+            for (int i = 0; i < n; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    evenSum = evenSum + nums[i] > oddSum ? evenSum + nums[i] : oddSum;
+                }
+                else
+                {
+                    oddSum = oddSum + nums[i] > evenSum ? oddSum + nums[i] : evenSum;
+                }
+            }
+            return oddSum > evenSum ? oddSum : evenSum;
+        }
+        #endregion
+
+        #region 217. Contains Duplicate
+        //Given an array of integers, find if the array contains any duplicates.Your function should return true if any value appears at least twice in the array, and it should return false if every element is distinct.
+        public static bool ContainsDuplicate(int[] nums)
+        {
+            var ex = new Dictionary<int, int>();
+            foreach (var num in nums)
+            {
+                if (ex.ContainsKey(num))
+                    return true;
+                ex[num] = 1;
+            }
+            return false;
+        }
+        #endregion
+
+        #region 219. Contains Duplicate II
+        //Given an array of integers and an integer k, find out whether there are two distinct indices i and j in the array such that nums[i] = nums[j] and the absolute difference between i and j is at most k.
+        public static bool ContainsNearbyDuplicate(int[] nums, int k)
+        {
+            var dic = new Dictionary<int, int>();
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (dic.ContainsKey(nums[i]) && (dic[nums[i]] - i >= 0 - k && dic[nums[i]] - i <= k))
+                    return true;
+                dic[nums[i]] = i;
+            }
+            return false;
+        }
+        #endregion
 
         #region 283. Move Zeroes
         //Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of the non-zero elements.
@@ -479,6 +607,46 @@ namespace LeetCode
                     count++;
                 }
             }
+        }
+        #endregion
+
+        #region 414. Third Maximum Number
+        //Given a non-empty array of integers, return the third maximum number in this array.If it does not exist, return the maximum number.The time complexity must be in O(n).
+        public static int ThirdMax(int[] nums)
+        {
+            int max1 = int.MinValue;
+            int max2 = int.MinValue;
+            int max3 = int.MinValue;
+            int findCount = 0;
+            bool minEnter = false;
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (((max1 == nums[i] || max2 == nums[i] || max3 == nums[i]) && nums[i] != int.MinValue) || (nums[i] == int.MinValue && minEnter))
+                    continue;
+                if (nums[i] == int.MinValue)
+                    minEnter = true;
+                if (nums[i] > max1)
+                {
+                    max3 = max2;
+                    max2 = max1;
+                    max1 = nums[i];
+                }
+                else if (nums[i] > max2)
+                {
+                    max3 = max2;
+                    max2 = nums[i];
+
+                }
+                else if (nums[i] > max3)
+                {
+                    max3 = nums[i];
+                }
+                findCount++;
+            }
+            if (findCount >= 3)
+                return max3;
+            else
+                return max1;
         }
         #endregion
 
@@ -537,6 +705,53 @@ namespace LeetCode
             return max;
         }
         #endregion
+
+        #region 532. K-diff Pairs in an Array
+        //Given an array of integers and an integer k, you need to find the number of unique k-diff pairs in the array.Here a k-diff pair is defined as an integer pair (i, j), where i and j are both numbers in the array and their absolute difference is k.
+
+        //Example 1:
+        //Input: [3, 1, 4, 1, 5], k = 2
+        //Output: 2
+        //Explanation: There are two 2-diff pairs in the array, (1, 3) and(3, 5).
+        //Although we have two 1s in the input, we should only return the number of unique pairs.
+        //Example 2:
+        //Input:[1, 2, 3, 4, 5], k = 1
+        //Output: 4
+        //Explanation: There are four 1-diff pairs in the array, (1, 2), (2, 3), (3, 4) and(4, 5).
+        //Example 3:
+        //Input: [1, 3, 1, 5, 4], k = 0
+        //Output: 1
+        //Explanation: There is one 0-diff pair in the array, (1, 1).
+        //Note:
+        //The pairs(i, j) and(j, i) count as the same pair.
+        //The length of the array won't exceed 10,000.
+        //All the integers in the given input belong to the range: [-1e7, 1e7].
+        public static int FindPairs(int[] nums, int k)
+        {
+            if (k < 0)
+                return 0;
+            var lowDic = new Dictionary<int, int>();
+            var upDic = new Dictionary<int, int>();
+            var result = new List<int>();
+            foreach (var num in nums)
+            {
+                if (lowDic.ContainsKey(num))
+                {
+                    if (!result.Contains(num))
+                        result.Add(num);
+                }
+                if (upDic.ContainsKey(num))
+                {
+                    if (!result.Contains(upDic[num]))
+                        result.Add(upDic[num]);
+                }
+                lowDic[num - k] = num;
+                upDic[num + k] = num;
+
+            }
+            return result.Count;
+        }
+        #endregion 
 
         #region 561. Array Partition I
         //Given an array of 2n integers, your task is to group these integers into n pairs of integer, say(a1, b1), (a2, b2), ..., (an, bn) which makes sum of min(ai, bi) for all i from 1 to n as large as possible.
@@ -643,6 +858,51 @@ namespace LeetCode
         }
         #endregion
 
+        #region 628. Maximum Product of Three Numbers
+        //Given an integer array, find three numbers whose product is maximum and output the maximum product.
+
+        //Example 1:
+        //Input: [1,2,3]
+        //Output: 6
+        //Example 2:
+        //Input: [1,2,3,4]
+        //Output: 24
+        public static int MaximumProduct(int[] nums)
+        {
+            int max1, max2, max3;
+            max1 = max2 = max3 = int.MinValue;
+            int min1, min2;
+            min1 = min2 = int.MaxValue;
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (nums[i] > max1)
+                {
+                    max3 = max2;
+                    max2 = max1;
+                    max1 = nums[i];
+                }
+                else if (nums[i] > max2)
+                {
+                    max3 = max2;
+                    max2 = nums[i];
+                }
+                else if (nums[i] > max3)
+                    max3 = nums[i];
+
+                if (nums[i] < min1)
+                {
+                    min2 = min1;
+                    min1 = nums[i];
+                }
+                else if (nums[i] < min2)
+                    min2 = nums[i];
+
+            }
+
+            return max1 * max2 * max3 > min1 * min2 * max1 ? max1 * max2 * max3 : min1 * min2 * max1;
+        }
+        #endregion
+
         #region 674. Longest Continuous Increasing Subsequence
         //Given an unsorted array of integers, find the length of longest continuous increasing subsequence(subarray).
 
@@ -730,6 +990,66 @@ namespace LeetCode
         }
         #endregion
 
+        #region 697. Degree of an Array
+        //Given a non-empty array of non-negative integers nums, the degree of this array is defined as the maximum frequency of any one of its elements.
+
+        //Your task is to find the smallest possible length of a (contiguous) subarray of nums, that has the same degree as nums.
+
+        //Example 1:
+        //Input: [1, 2, 2, 3, 1]
+        //Output: 2
+        //Explanation: 
+        //The input array has a degree of 2 because both elements 1 and 2 appear twice.
+        //Of the subarrays that have the same degree:
+        //[1, 2, 2, 3, 1], [1, 2, 2, 3], [2, 2, 3, 1], [1, 2, 2], [2, 2, 3], [2, 2]
+        //The shortest length is 2. So return 2.
+        //Example 2:
+        //Input: [1,2,2,3,1,4,2]
+        //Output: 6
+        //Note:
+
+        //nums.length will be between 1 and 50,000.
+        //nums[i] will be an integer between 0 and 49,999.
+        public static int FindShortestSubArray(int[] nums)
+        {
+            var frenquency = new Dictionary<int, int>();
+            var startIndex = new Dictionary<int, int>();
+            var endIndex = new Dictionary<int, int>();
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (frenquency.ContainsKey(nums[i]))
+                {
+                    frenquency[nums[i]]++;
+                    endIndex[nums[i]] = i;
+                }
+                else
+                {
+                    frenquency[nums[i]] = 1;
+                    startIndex[nums[i]] = i;
+                    endIndex[nums[i]] = i;
+                }
+            }
+
+
+            int maxCount = 0;
+            foreach (var value in frenquency.Values)
+            {
+                if (value > maxCount)
+                    maxCount = value;
+            }
+            var maxList = frenquency.Where(x => x.Value == maxCount).Select(x => x.Key).ToList();
+            int result = int.MaxValue;
+            foreach (var max in maxList)
+            {
+                if (endIndex[max] - startIndex[max] + 1 < result)
+                {
+                    result = endIndex[max] - startIndex[max] + 1;
+                }
+            }
+            return result;
+        }
+        #endregion
+
         #region 717. 1-bit and 2-bit Characters
         //We have two special characters.The first character can be represented by one bit 0. The second character can be represented by two bits(10 or 11).
 
@@ -765,6 +1085,62 @@ namespace LeetCode
             return position == n - 1;
 
         }
+        #endregion
+
+        #region 740. Delete and Earn
+        //Given an array nums of integers, you can perform operations on the array.
+
+        //In each operation, you pick any nums[i] and delete it to earn nums[i] points.After, you must delete every element equal to nums[i] - 1 or nums[i] + 1.
+
+        //You start with 0 points.Return the maximum number of points you can earn by applying such operations.
+
+        //Example 1:
+        //Input: nums = [3, 4, 2]
+        //Output: 6
+        //Explanation: 
+        //Delete 4 to earn 4 points, consequently 3 is also deleted.
+        //Then, delete 2 to earn 2 points. 6 total points are earned.
+        //Example 2:
+        //Input: nums = [2, 2, 3, 3, 3, 4]
+        //Output: 9
+        //Explanation: 
+        //Delete 3 to earn 3 points, deleting both 2's and the 4.
+        //Then, delete 3 again to earn 3 points, and 3 again to earn 3 points.
+        //9 total points are earned.
+        //Note:
+
+        //The length of nums is at most 20000.
+        //Each element nums[i] is an integer in the range [1, 10000].
+        public static int DeleteAndEarn(int[] nums)
+        {
+            var result = 0;
+
+            var sums = new int[10001];
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                sums[nums[i]] += nums[i];
+            }
+
+            int oddSum = 0;
+            int evenSum = 0;
+            for (int key = 0; key < sums.Length; key++)
+            {
+                if (key % 2 == 0)
+                {
+                    evenSum = evenSum + sums[key] > oddSum ? evenSum + sums[key] : oddSum;
+                }
+                else
+                {
+                    oddSum = oddSum + sums[key] > evenSum ? oddSum + sums[key] : evenSum;
+                }
+            }
+
+            result = oddSum > evenSum ? oddSum : evenSum;
+
+            return result;
+        }
+
         #endregion
 
         #region 744. Find Smallest Letter Greater Than Target
@@ -858,6 +1234,92 @@ namespace LeetCode
                 return -1;
         }
         #endregion
+
+        #region 760. Find Anagram Mappings
+        //Given two lists Aand B, and B is an anagram of A.B is an anagram of A means B is made by randomizing the order of the elements in A.
+
+        //We want to find an index mapping P, from A to B. A mapping P[i] = j means the ith element in A appears in B at index j.
+
+        //These lists A and B may contain duplicates. If there are multiple answers, output any of them.
+
+        //For example, given
+
+        //A = [12, 28, 46, 32, 50]
+        //B = [50, 12, 32, 46, 28]
+        //We should return
+        //[1, 4, 3, 2, 0]
+        //as P[0] = 1 because the 0th element of A appears at B[1], and P[1] = 4 because the 1st element of A appears at B[4], and so on.
+        //Note:
+
+        //A, B have equal lengths in range[1, 100].
+        //A[i], B[i] are integers in range[0, 10 ^ 5].
+        public static int[] AnagramMappings(int[] A, int[] B)
+        {
+            int[] result = new int[A.Length];
+            for (int i = 0; i < A.Length; i++)
+            {
+                for (int j = 0; j < B.Length; j++)
+                {
+                    if (A[i] == B[j] && !result.Contains(j))
+                    {
+                        result[i] = j;
+                    }
+                }
+            }
+            return result;
+        }
+        #endregion
+
+        #region 766. Toeplitz Matrix
+        //A matrix is Toeplitz if every diagonal from top-left to bottom-right has the same element.
+
+        //Now given an M x N matrix, return True if and only if the matrix is Toeplitz.
+
+
+        //Example 1:
+
+        //Input: matrix = [[1,2,3,4],[5,1,2,3],[9,5,1,2]]
+        //Output: True
+        //Explanation:
+        //1234
+        //5123
+        //9512
+
+        //In the above grid, the diagonals are "[9]", "[5, 5]", "[1, 1, 1]", "[2, 2, 2]", "[3, 3]", "[4]", and in each diagonal all elements are the same, so the answer is True.
+        //Example 2:
+
+        //Input: matrix = [[1,2],[2,2]]
+        //Output: False
+        //Explanation:
+        //The diagonal "[1, 2]" has different elements.
+        //Note:
+
+        //matrix will be a 2D array of integers.
+        //matrix will have a number of rows and columns in range[1, 20].
+        //matrix[i][j] will be integers in range[0, 99].
+        public static bool IsToeplitzMatrix(int[,] matrix)
+        {
+            int m = matrix.GetLength(0);
+            int n = matrix.GetLength(1);
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    int value = matrix[i, j];
+                    int row = i + 1;
+                    int column = j + 1;
+                    while (row < m && column < n)
+                    {
+                        if (matrix[row, column] != value)
+                            return false;
+                        row++;
+                        column++;
+                    }
+                }
+            }
+            return true; ;
+        }
+        #endregion 
     }
 
     public class ListNode
