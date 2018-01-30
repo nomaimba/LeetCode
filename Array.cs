@@ -83,7 +83,32 @@ namespace LeetCode
             }
             return result;
         }
-        #endregion 
+        #endregion
+
+        #region 11. Container With Most Water
+        //Given n non-negative integers a1, a2, ..., an, where each represents a point at coordinate(i, ai). n vertical lines are drawn such that the two endpoints of line i is at(i, ai) and(i, 0). Find two lines, which together with x-axis forms a container, such that the container contains the most water.
+
+        //Note: You may not slant the container and n is at least 2.
+        public static int MaxArea(int[] height)
+        {
+            int max = 0;
+            for (int i = 0, j = height.Length - 1; i != j;)
+            {
+                int area = (j - i) * (height[i] < height[j] ? height[i] : height[j]);
+                if (area > max)
+                    max = area;
+                if (height[i] > height[j])
+                {
+                    j--;
+                }
+                else
+                {
+                    i++;
+                }
+            }
+            return max;
+        }
+        #endregion
 
         #region 26. Remove Duplicates from Sorted Array
         //Given a sorted array, remove the duplicates in-place such that each element appear only once and return the new length.
@@ -492,6 +517,24 @@ namespace LeetCode
         }
         #endregion
 
+        #region 169. Majority Element
+        //Given an array of size n, find the majority element.The majority element is the element that appears more than ⌊ n/2 ⌋ times.
+
+        //You may assume that the array is non-empty and the majority element always exist in the array.
+        public static int MajorityElement(int[] nums)
+        {
+            int count = 0;
+            int candidate = 0;
+            foreach (int num in nums)
+            {
+                if (count == 0)
+                    candidate = num;
+                count += candidate == num ? 1 : -1;
+            }
+            return candidate;
+        }
+        #endregion
+
         #region 189. Rotate Array
         //Rotate an array of n elements to the right by k steps.
 
@@ -582,6 +625,29 @@ namespace LeetCode
         }
         #endregion
 
+        #region 268. Missing Number
+        //Given an array containing n distinct numbers taken from 0, 1, 2, ..., n, find the one that is missing from the array.
+
+        //Example 1
+
+        //Input: [3,0,1]
+        //Output: 2
+        //Example 2
+
+        //Input: [9,6,4,2,3,5,7,0,1]
+        //Output: 8
+        public static int MissingNumber(int[] nums)
+        {
+            int sum = (1 + nums.Length) * nums.Length / 2;
+            int realSum = 0;
+            for (int i = 0; i < nums.Length; i++)
+            {
+                realSum += nums[i];
+            }
+            return sum - realSum;
+        }
+        #endregion 
+
         #region 283. Move Zeroes
         //Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of the non-zero elements.
 
@@ -647,6 +713,28 @@ namespace LeetCode
                 return max3;
             else
                 return max1;
+        }
+        #endregion
+
+        #region 442. Find All Duplicates in an Array
+        //Given an array of integers, 1 ≤ a[i] ≤ n(n = size of array), some elements appear twice and others appear once.
+
+        //Find all the elements that appear twice in this array.
+
+        //Could you do it without extra space and in O(n) runtime?
+        public static IList<int> FindDuplicates(int[] nums)
+        {
+            var result = new List<int>();
+            Array.Sort(nums);
+            for (int i = 1; i < nums.Length; i++)
+            {
+                if (nums[i] == nums[i - 1])
+                {
+                    result.Add(nums[i]);
+                    i++;
+                }
+            }
+            return result;
         }
         #endregion
 
@@ -858,6 +946,41 @@ namespace LeetCode
         }
         #endregion
 
+        #region 605. Can Place Flowers
+        //Suppose you have a long flowerbed in which some of the plots are planted and some are not.However, flowers cannot be planted in adjacent plots - they would compete for water and both would die.
+
+        //Given a flowerbed(represented as an array containing 0 and 1, where 0 means empty and 1 means not empty), and a number n, return if n new flowers can be planted in it without violating the no-adjacent-flowers rule.
+
+        //Example 1:
+        //Input: flowerbed = [1, 0, 0, 0, 1], n = 1
+        //Output: True
+        //Example 2:
+        //Input: flowerbed = [1, 0, 0, 0, 1], n = 2
+        //Output: False
+        //Note:
+        //The input array won't violate no-adjacent-flowers rule.
+        //The input array size is in the range of[1, 20000].
+        //n is a non-negative integer which won't exceed the input array size.
+        public static bool CanPlaceFlowers(int[] flowerbed, int n)
+        {
+            if (n == 0)
+                return true;
+            for (int i = 0; i < flowerbed.Length; i++)
+            {
+                if (flowerbed[i] == 0 && (i - 1 < 0 || flowerbed[i - 1] != 1) && (i + 1 >= flowerbed.Length || flowerbed[i + 1] != 1))
+                {
+                    flowerbed[i] = 1;
+                    i++;
+                    n--;
+                }
+
+                if (n == 0)
+                    break;
+            }
+            return n == 0;
+        }
+        #endregion
+
         #region 628. Maximum Product of Three Numbers
         //Given an integer array, find three numbers whose product is maximum and output the maximum product.
 
@@ -900,6 +1023,163 @@ namespace LeetCode
             }
 
             return max1 * max2 * max3 > min1 * min2 * max1 ? max1 * max2 * max3 : min1 * min2 * max1;
+        }
+        #endregion
+
+        #region 643. Maximum Average Subarray I
+        //Given an array consisting of n integers, find the contiguous subarray of given length k that has the maximum average value.And you need to output the maximum average value.
+
+        //Example 1:
+        //Input: [1,12,-5,-6,50,3], k = 4
+        //Output: 12.75
+        //Explanation: Maximum average is (12-5-6+50)/4 = 51/4 = 12.75
+        //Note:
+        //1 <= k <= n <= 30,000.
+        //Elements of the given array will be in the range[-10, 000, 10, 000].
+        public static double FindMaxAverage(int[] nums, int k)
+        {
+            double currentMax = int.MinValue;
+            int beforesums = int.MinValue;
+            for (int i = k - 1; i < nums.Length; i++)
+            {
+
+                int sum = 0;
+                if (beforesums == int.MinValue)
+                {
+                    for (int j = 0; j < k; j++)
+                    {
+                        sum += nums[i - j];
+                    }
+                    beforesums = sum;
+                }
+                else
+                {
+                    sum = beforesums - nums[i - k];
+                    sum += nums[i];
+                    beforesums = sum;
+                }
+
+                if (sum > currentMax)
+                    currentMax = sum;
+            }
+            return currentMax / (double)k;
+        }
+        #endregion
+
+        #region 661. Image Smoother
+        //Given a 2D integer matrix M representing the gray scale of an image, you need to design a smoother to make the gray scale of each cell becomes the average gray scale(rounding down) of all the 8 surrounding cells and itself.If a cell has less than 8 surrounding cells, then use as many as you can.
+
+
+        //Example 1:
+        //Input:
+        //[[1,1,1],
+        //[1,0,1],
+        //[1,1,1]]
+        //Output:
+        //[[0, 0, 0],
+        // [0, 0, 0],
+        // [0, 0, 0]]
+        //Explanation:
+        //For the point(0,0), (0,2), (2,0), (2,2): floor(3/4) = floor(0.75) = 0
+        //For the point(0,1), (1,0), (1,2), (2,1): floor(5/6) = floor(0.83333333) = 0
+        //For the point(1,1): floor(8/9) = floor(0.88888889) = 0
+        //Note:
+        //The value in the given matrix is in the range of[0, 255].
+        //The length and width of the given matrix are in the range of[1, 150].
+        public static int[,] ImageSmoother(int[,] M)
+        {
+            int[,] result = new int[M.GetLength(0), M.GetLength(1)];
+            for (int i = 0; i < M.GetLength(0); i++)
+            {
+                for (int j = 0; j < M.GetLength(1); j++)
+                {
+                    int value = 0;
+                    int count = 0;
+                    value += M[i, j];
+                    count++;
+                    if (i - 1 >= 0)
+                    {
+                        value += M[i - 1, j];
+                        count++;
+                    }
+                    if (j - 1 >= 0)
+                    {
+                        value += M[i, j - 1];
+                        count++;
+                    }
+                    if (i + 1 < M.GetLength(0))
+                    {
+                        value += M[i + 1, j];
+                        count++;
+                    }
+                    if (j + 1 < M.GetLength(1))
+                    {
+                        value += M[i, j + 1];
+                        count++;
+                    }
+                    if (i - 1 >= 0 && j - 1 >= 0)
+                    {
+                        value += M[i - 1, j - 1];
+                        count++;
+                    }
+                    if (i - 1 >= 0 && j + 1 < M.GetLength(1))
+                    {
+                        value += M[i - 1, j + 1];
+                        count++;
+                    }
+                    if (i + 1 < M.GetLength(0) && j - 1 >= 0)
+                    {
+                        value += M[i + 1, j - 1];
+                        count++;
+                    }
+                    if (i + 1 < M.GetLength(0) && j + 1 < M.GetLength(1))
+                    {
+                        value += M[i + 1, j + 1];
+                        count++;
+                    }
+                    value = value / count;
+                    result[i, j] = value;
+                }
+            }
+            return result;
+        }
+        #endregion
+
+        #region 665. Non-decreasing Array
+        //Given an array with n integers, your task is to check if it could become non-decreasing by modifying at most 1 element.
+
+        //We define an array is non-decreasing if array[i] <= array[i + 1] holds for every i(1 <= i<n).
+
+        //Example 1:
+        //Input: [4,2,3]
+        //        Output: True
+        //        Explanation: You could modify the first 4 to 1 to get a non-decreasing array.
+        //        Example 2:
+        //Input: [4,2,1]
+        //Output: False
+        //        Explanation: You can't get a non-decreasing array by modify at most one element.
+        //Note: The n belongs to [1, 10,000].
+        public static bool CheckPossibility(int[] nums)
+        {
+            int count = 0;
+            for (int i = 1; i < nums.Length - 1; i++)
+            {
+                if (nums[i] < nums[i - 1])
+                {
+                    if (i - 2 >= 0 && nums[i] > nums[i - 2])
+                        nums[i - 1] = nums[i - 2];
+                    else if (i - 2 < 0)
+                        nums[i - 1] = 1;
+                    else
+                        nums[i] = nums[i - 1];
+                    count++;
+                }
+                if (count > 1)
+                    return false;
+            }
+            if (count == 1 && nums[nums.Length - 1] < nums[nums.Length - 2])
+                return false;
+            return true;
         }
         #endregion
 
@@ -1087,6 +1367,48 @@ namespace LeetCode
         }
         #endregion
 
+        #region 724. Find Pivot Index
+        //Given an array of integers nums, write a method that returns the "pivot" index of this array.
+
+        //We define the pivot index as the index where the sum of the numbers to the left of the index is equal to the sum of the numbers to the right of the index.
+
+        //If no such index exists, we should return -1. If there are multiple pivot indexes, you should return the left-most pivot index.
+
+        //Example 1:
+        //Input: 
+        //nums = [1, 7, 3, 6, 5, 6]
+        //        Output: 3
+        //Explanation: 
+        //The sum of the numbers to the left of index 3 (nums[3] = 6) is equal to the sum of numbers to the right of index 3.
+        //Also, 3 is the first index where this occurs.
+        //Example 2:
+        //Input: 
+        //nums = [1, 2, 3]
+        //        Output: -1
+        //Explanation: 
+        //There is no index that satisfies the conditions in the problem statement.
+        //Note:
+
+        //The length of nums will be in the range[0, 10000].
+        //Each element nums[i] will be an integer in the range[-1000, 1000].
+        public static int PivotIndex(int[] nums)
+        {
+            int sum = 0;
+            foreach (int num in nums)
+            {
+                sum += num;
+            }
+            int leftSum = 0;
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (sum - leftSum - nums[i] == leftSum)
+                    return i;
+                leftSum += nums[i];
+            }
+            return -1;
+        }
+        #endregion
+
         #region 740. Delete and Earn
         //Given an array nums of integers, you can perform operations on the array.
 
@@ -1192,7 +1514,36 @@ namespace LeetCode
             }
             return letters[0];
         }
-        #endregion 
+        #endregion
+
+        #region 746. Min Cost Climbing Stairs
+        //On a staircase, the i-th step has some non-negative cost cost[i] assigned(0 indexed).
+
+        //Once you pay the cost, you can either climb one or two steps.You need to find minimum cost to reach the top of the floor, and you can either start from the step with index 0, or the step with index 1.
+
+        //Example 1:
+        //Input: cost = [10, 15, 20]
+        //Output: 15
+        //Explanation: Cheapest is start on cost[1], pay that cost and go to the top.
+        //Example 2:
+        //Input: cost = [1, 100, 1, 1, 1, 100, 1, 1, 100, 1]
+        //Output: 6
+        //Explanation: Cheapest is start on cost[0], and only step on 1s, skipping cost[3].
+        //Note:
+        //cost will have a length in the range [2, 1000].
+        //Every cost[i] will be an integer in the range [0, 999].
+        public static int MinCostClimbingStairs(int[] cost)
+        {
+            int f1 = 0, f2 = 0;
+            for (int i = cost.Length - 1; i >= 0; i--)
+            {
+                int f0 = cost[i] + (f1 < f2 ? f1 : f2);
+                f2 = f1;
+                f1 = f0;
+            }
+            return f1 < f2 ? f1 : f2;
+        }
+        #endregion
 
         #region 747. Largest Number At Least Twice of Others
         //In a given integer array nums, there is always exactly one largest element.
