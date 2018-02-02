@@ -595,6 +595,43 @@ namespace LeetCode
         }
         #endregion
 
+        #region 216. Combination Sum III
+        //Find all possible combinations of k numbers that add up to a number n, given that only numbers from 1 to 9 can be used and each combination should be a unique set of numbers.
+
+
+        //Example 1:
+
+        //Input: k = 3, n = 7
+        public static IList<IList<int>> CombinationSum3(int k, int n)
+        {
+            var result = new List<IList<int>>();
+            combination(result, new List<int>(), k, 1, n);
+            return result;
+        }
+
+        private static void combination(List<IList<int>> ans, List<int> comb, int k, int start, int n)
+        {
+            if (comb.Count > k)
+                return;
+            if (comb.Count == k && n == 0)
+            {
+                var l = new List<int>();
+                foreach (var c in comb)
+                {
+                    l.Add(c);
+                }
+                ans.Add(l);
+                return;
+            }
+            for (int i = start; i <= 9; i++)
+            {
+                comb.Add(i);
+                combination(ans, comb, k, i + 1, n - i);
+                comb.RemoveAt(comb.Count - 1);
+            }
+        }
+        #endregion 
+
         #region 217. Contains Duplicate
         //Given an array of integers, find if the array contains any duplicates.Your function should return true if any value appears at least twice in the array, and it should return false if every element is distinct.
         public static bool ContainsDuplicate(int[] nums)
@@ -622,6 +659,47 @@ namespace LeetCode
                 dic[nums[i]] = i;
             }
             return false;
+        }
+        #endregion
+
+        #region 238. Product of Array Except Self
+        //Given an array of n integers where n > 1, nums, return an array output such that output[i] is equal to the product of all the elements of nums except nums[i].
+
+        //Solve it without division and in O(n).
+
+        //For example, given[1, 2, 3, 4], return [24,12,8,6].
+
+        //Follow up:
+        //Could you solve it with constant space complexity? (Note: The output array does not count as extra space for the purpose of space complexity analysis.)
+        public static int[] ProductExceptSelf(int[] nums)
+        {
+            int product = 1;
+            int zeroCount = 0;
+            foreach (var num in nums)
+            {
+                if (num != 0)
+                    product *= num;
+                else
+                    zeroCount++;
+            }
+            var result = new int[nums.Length];
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (zeroCount == 0)
+                    result[i] = product / nums[i];
+                else if (zeroCount == 1)
+                {
+                    if (nums[i] != 0)
+                        result[i] = 0;
+                    else
+                        result[i] = product;
+                }
+                else
+                {
+                    result[i] = 0;
+                }
+            }
+            return result;
         }
         #endregion
 
@@ -794,6 +872,46 @@ namespace LeetCode
         }
         #endregion
 
+        #region 495. Teemo Attacking
+        //In LOL world, there is a hero called Teemo and his attacking can make his enemy Ashe be in poisoned condition.Now, given the Teemo's attacking ascending time series towards Ashe and the poisoning time duration per Teemo's attacking, you need to output the total time that Ashe is in poisoned condition.
+
+        //You may assume that Teemo attacks at the very beginning of a specific time point, and makes Ashe be in poisoned condition immediately.
+
+        //Example 1:
+        //Input: [1,4], 2
+        //Output: 4
+        //Explanation: At time point 1, Teemo starts attacking Ashe and makes Ashe be poisoned immediately. 
+        //This poisoned status will last 2 seconds until the end of time point 2. 
+        //And at time point 4, Teemo attacks Ashe again, and causes Ashe to be in poisoned status for another 2 seconds.
+        //So you finally need to output 4.
+        //Example 2:
+        //Input: [1,2], 2
+        //Output: 3
+        //Explanation: At time point 1, Teemo starts attacking Ashe and makes Ashe be poisoned.
+        //This poisoned status will last 2 seconds until the end of time point 2. 
+        //However, at the beginning of time point 2, Teemo attacks Ashe again who is already in poisoned status. 
+        //Since the poisoned status won't add up together, though the second poisoning attack will still work at time point 2, it will stop at the end of time point 3. 
+        //So you finally need to output 3.
+        //Note:
+        //You may assume the length of given time series array won't exceed 10000.
+        //You may assume the numbers in the Teemo's attacking time series and his poisoning time duration per attacking are non-negative integers, which won't exceed 10,000,000.
+        public static int FindPoisonedDuration(int[] timeSeries, int duration)
+        {
+            int result = 0;
+            for (int i = 1; i < timeSeries.Length; i++)
+            {
+                if (timeSeries[i] - timeSeries[i - 1] > duration)
+                    result += duration;
+                else
+                    result += timeSeries[i] - timeSeries[i - 1];
+            }
+            if (timeSeries.Length > 0)
+                result += duration;
+            return result;
+        }
+
+        #endregion 
+
         #region 532. K-diff Pairs in an Array
         //Given an array of integers and an integer k, you need to find the number of unique k-diff pairs in the array.Here a k-diff pair is defined as an integer pair (i, j), where i and j are both numbers in the array and their absolute difference is k.
 
@@ -865,6 +983,49 @@ namespace LeetCode
             return result;
         }
         #endregion
+
+        #region 565. Array Nesting
+        //A zero-indexed array A of length N contains all integers from 0 to N-1. Find and return the longest length of set S, where S[i] = {A[i], A[A[i]], A[A[A[i]]], ... }
+        //subjected to the rule below.
+
+        //    Suppose the first element in S starts with the selection of element A[i] of index = i, the next element in S should be A[A[i]], and then A[A[A[i]]]… By that analogy, we stop adding right before a duplicate element occurs in S.
+
+        //    Example 1:
+        //    Input: A = [5,4,0,3,1,6,2]
+        //        Output: 6
+        //    Explanation: 
+        //    A[0] = 5, A[1] = 4, A[2] = 0, A[3] = 3, A[4] = 1, A[5] = 6, A[6] = 2.
+
+        //    One of the longest S[K]:
+        //    S[0] = {A[0], A[5], A[6], A[2]
+        //    } = {5, 6, 2, 0}
+        //    Note:
+        //    N is an integer within the range[1, 20, 000].
+        //The elements of A are all distinct.
+        //Each element of A is an integer within the range[0, N - 1].
+        public static int ArrayNesting(int[] nums)
+        {
+            int result = 0;
+            var dic = new Dictionary<int, int>();
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (dic.ContainsKey(i))
+                    continue;
+                int index = i;
+                int value = nums[i];
+                int count = 1;
+                while (value != index)
+                {
+                    dic[value] = 0;
+                    value = nums[value];
+                    count++;
+                }
+                if (count > result)
+                    result = count;
+            }
+            return result;
+        }
+        #endregion 
 
         #region 566. Reshape the Matrix
         //In MATLAB, there is a very useful function called 'reshape', which can reshape a matrix into a new one with different size but keep its original data.
@@ -1183,6 +1344,31 @@ namespace LeetCode
         }
         #endregion
 
+        #region 667. Beautiful Arrangement II
+        //Given two integers n and k, you need to construct a list which contains n different positive integers ranging from 1 to n and obeys the following requirement: 
+        //Suppose this list is [a1, a2, a3, ... , an], then the list[| a1 - a2 |, | a2 - a3 |, | a3 - a4 |, ... , | an - 1 - an |] has exactly k distinct integers.
+
+        //If there are multiple answers, print any of them.
+
+        //Example 1:
+        //Input: n = 3, k = 1
+        //Output: [1, 2, 3]
+        //Explanation: The[1, 2, 3] has three different positive integers ranging from 1 to 3, and the [1, 1] has exactly 1 distinct integer: 1.
+        //Example 2:
+        //Input: n = 3, k = 2
+        //Output: [1, 3, 2]
+        //Explanation: The[1, 3, 2] has three different positive integers ranging from 1 to 3, and the [2, 1] has exactly 2 distinct integers: 1 and 2.
+        //Note:
+        //The n and k are in the range 1 <= k<n <= 104.
+        public static int[] ConstructArray(int n, int k)
+        {
+            int[] res = new int[n];
+            for (int i = 0, l = 1, r = n; l <= r; i++)
+                res[i] = k > 1 ? (k-- % 2 != 0 ? l++ : r--) : l++;
+            return res;
+        }
+        #endregion
+
         #region 674. Longest Continuous Increasing Subsequence
         //Given an unsorted array of integers, find the length of longest continuous increasing subsequence(subarray).
 
@@ -1327,6 +1513,39 @@ namespace LeetCode
                 }
             }
             return result;
+        }
+        #endregion
+
+        #region 714. Best Time to Buy and Sell Stock with Transaction Fee
+        //Your are given an array of integers prices, for which the i-th element is the price of a given stock on day i; and a non-negative integer fee representing a transaction fee.
+
+        //You may complete as many transactions as you like, but you need to pay the transaction fee for each transaction.You may not buy more than 1 share of a stock at a time (ie.you must sell the stock share before you buy again.)
+
+        //Return the maximum profit you can make.
+
+        //Example 1:
+        //Input: prices = [1, 3, 2, 8, 4, 9], fee = 2
+        //Output: 8
+        //Explanation: The maximum profit can be achieved by:
+        //Buying at prices[0] = 1
+        //Selling at prices[3] = 8
+        //Buying at prices[4] = 4
+        //Selling at prices[5] = 9
+        //The total profit is ((8 - 1) - 2) + ((9 - 4) - 2) = 8.
+        //Note:
+
+        //0 < prices.length <= 50000.
+        //0 < prices[i] < 50000.
+        //0 <= fee< 50000.
+        public static int MaxProfit(int[] prices, int fee)
+        {
+            int cash = 0, hold = -prices[0];
+            for (int i = 1; i < prices.Length; i++)
+            {
+                cash = cash > hold + prices[i] - fee ? cash : hold + prices[i] - fee;
+                hold = hold > cash - prices[i] ? hold : cash - prices[i];
+            }
+            return cash;
         }
         #endregion
 
@@ -1670,7 +1889,45 @@ namespace LeetCode
             }
             return true; ;
         }
-        #endregion 
+        #endregion
+
+        #region 769. Max Chunks To Make Sorted
+        //Given an array arr that is a permutation of[0, 1, ..., arr.length - 1], we split the array into some number of "chunks" (partitions), and individually sort each chunk.After concatenating them, the result equals the sorted array.
+
+        //What is the most number of chunks we could have made?
+
+        //Example 1:
+
+
+        //Input: arr = [4, 3, 2, 1, 0]
+        //Output: 1
+        //Explanation:
+        //Splitting into two or more chunks will not return the required result.
+        //For example, splitting into [4, 3], [2, 1, 0] will result in [3, 4, 0, 1, 2], which isn't sorted.
+        //Example 2:
+
+
+        //Input: arr = [1, 0, 2, 3, 4]
+        //Output: 4
+        //Explanation:
+        //We can split into two chunks, such as [1, 0], [2, 3, 4].
+        //However, splitting into [1, 0], [2], [3], [4] is the highest number of chunks possible.
+        //Note:
+
+
+        //arr will have length in range[1, 10].
+        //arr[i] will be a permutation of [0, 1, ..., arr.length - 1].
+        public static int MaxChunksToSorted(int[] arr)
+        {
+            int ans = 0, max = 0;
+            for (int i = 0; i < arr.Length; ++i)
+            {
+                max = max > arr[i] ? max : arr[i];
+                if (max == i) ans++;
+            }
+            return ans;
+        }
+        #endregion
     }
 
     public class ListNode
