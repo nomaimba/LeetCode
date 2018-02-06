@@ -325,6 +325,57 @@ namespace LeetCode
         }
         #endregion
 
+        #region 78. Subsets
+        //Given a set of distinct integers, nums, return all possible subsets(the power set).
+
+        //Note: The solution set must not contain duplicate subsets.
+
+        //For example,
+        //If nums = [1, 2, 3], a solution is:
+
+        //[
+        //  [3],
+        //  [1],
+        //  [2],
+        //  [1,2,3],
+        //  [1,3],
+        //  [2,3],
+        //  [1,2],
+        //  []
+        //]
+        public static IList<IList<int>> Subsets(int[] nums)
+        {
+            var result = new List<IList<int>>();
+            for (int count = 0; count <= nums.Length; count++)
+            {
+                var subSet = new List<int>();
+                AddSubSets(result, subSet, 0, count, nums);
+            }
+            return result;
+        }
+
+        public static void AddSubSets(IList<IList<int>> result, IList<int> subSet, int start, int count, int[] nums)
+        {
+            if (subSet.Count == count)
+            {
+                var subResult = new List<int>();
+                foreach (var num in subSet)
+                {
+                    subResult.Add(num);
+                }
+                result.Add(subResult);
+                return;
+            }
+
+            for (int i = start; i < nums.Length; i++)
+            {
+                subSet.Add(nums[i]);
+                AddSubSets(result, subSet, i + 1, count, nums);
+                subSet.RemoveAt(subSet.Count - 1);
+            }
+        }
+        #endregion
+
         #region 88. Merge Sorted Array
         //Given two sorted integer arrays nums1 and nums2, merge nums2 into nums1 as one sorted array.
 
@@ -724,19 +775,49 @@ namespace LeetCode
             }
             return sum - realSum;
         }
-        #endregion 
+        #endregion
 
-        #region 283. Move Zeroes
-        //Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of the non-zero elements.
-
-        //For example, given nums = [0, 1, 0, 3, 12], after calling your function, nums should be[1, 3, 12, 0, 0].
+        #region 287. Find the Duplicate Number
+        //Given an array nums containing n + 1 integers where each integer is between 1 and n(inclusive), prove that at least one duplicate number must exist.Assume that there is only one duplicate number, find the duplicate one.
 
         //Note:
-        //You must do this in-place without making a copy of the array.
-        //Minimize the total number of operations.
-        //Credits:
-        //Special thanks to @jianchao.li.fighter for adding this problem and creating all test cases.
-        public static void MoveZeroes(int[] nums)
+        //You must not modify the array(assume the array is read only).
+        //You must use only constant, O(1) extra space.
+        //Your runtime complexity should be less than O(n2).
+        //There is only one duplicate number in the array, but it could be repeated more than once.
+        public static int FindDuplicate(int[] nums)
+        {
+            int t = nums[0];
+            int r = nums[0];
+            do
+            {
+                t = nums[t];
+                r = nums[nums[r]];
+            }
+            while (t != r);
+
+            int ptr1 = nums[0];
+            int ptr2 = t;
+            while(ptr1 != ptr2)
+            {
+                ptr1 = nums[ptr1];
+                ptr2 = nums[ptr2];
+            }
+            return ptr1;
+        }
+        #endregion
+
+        #region 283. Move Zeroes
+            //Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of the non-zero elements.
+
+            //For example, given nums = [0, 1, 0, 3, 12], after calling your function, nums should be[1, 3, 12, 0, 0].
+
+            //Note:
+            //You must do this in-place without making a copy of the array.
+            //Minimize the total number of operations.
+            //Credits:
+            //Special thanks to @jianchao.li.fighter for adding this problem and creating all test cases.
+            public static void MoveZeroes(int[] nums)
         {
             int count = 0;
             for (int i = nums.Length - 1; i >= 0; i--)
@@ -1139,6 +1220,45 @@ namespace LeetCode
                     break;
             }
             return n == 0;
+        }
+        #endregion
+
+        #region 611. Valid Triangle Number
+        //Given an array consists of non-negative integers, your task is to count the number of triplets chosen from the array that can make triangles if we take them as side lengths of a triangle.
+        //Example 1:
+        //Input: [2,2,3,4]
+        //        Output: 3
+        //Explanation:
+        //Valid combinations are: 
+        //2,3,4 (using the first 2)
+        //2,3,4 (using the second 2)
+        //2,2,3
+        //Note:
+        //The length of the given array won't exceed 1000.
+        //The integers in the given array are in the range of[0, 1000].
+        public static int TriangleNumber(int[] nums)
+        {
+            int result = 0;
+            Array.Sort(nums);
+            for (int i = nums.Length - 1; i >= 2; i--)
+            {
+                int l = 0;
+                int r = i - 1;
+                while (l < r)
+                {
+                    if (nums[l] + nums[r] > nums[i])
+                    {
+                        result += r - l;
+                        r--;
+                    }
+                    else
+                    {
+                        l++;
+                    }
+                }
+            }
+
+            return result;
         }
         #endregion
 
