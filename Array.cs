@@ -110,6 +110,30 @@ namespace LeetCode
         }
         #endregion
 
+        #region 20. Valid Parentheses
+        //Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+
+        //The brackets must close in the correct order, "()" and "()[]{}" are all valid but "(]" and "([)]" are not.
+
+
+        public static bool IsValid(string s)
+        {
+            Stack<char> stack = new Stack<char>();
+            foreach (char c in s)
+            {
+                if (c == '(')
+                    stack.Push(')');
+                else if (c == '[')
+                    stack.Push(']');
+                else if (c == '{')
+                    stack.Push('}');
+                else if (stack.Count == 0 || stack.Pop() != c)
+                    return false;
+            }
+            return stack.Count == 0;
+        }
+        #endregion
+
         #region 26. Remove Duplicates from Sorted Array
         //Given a sorted array, remove the duplicates in-place such that each element appear only once and return the new length.
 
@@ -221,6 +245,63 @@ namespace LeetCode
         }
         #endregion
 
+        #region 39. Combination Sum
+        //Given a set of candidate numbers(C) (without duplicates) and a target number(T), find all unique combinations in C where the candidate numbers sums to T.
+
+        //The same repeated number may be chosen from C unlimited number of times.
+
+
+        //Note:
+        //All numbers (including target) will be positive integers.
+        //The solution set must not contain duplicate combinations.
+        //For example, given candidate set[2, 3, 6, 7] and target 7,
+        //A solution set is: 
+        //[
+        //  [7],
+        //[2, 2, 3]
+        //]
+        public static IList<IList<int>> CombinationSum(int[] candidates, int target)
+        {
+            var result = new List<IList<int>>();
+            Array.Sort(candidates);
+            int start = 0;
+            var comb = new List<int>();
+            R(result, candidates, comb, ref start, target);
+            return result;
+        }
+
+        public static void R(IList<IList<int>> result, int[] candidates, IList<int> comb, ref int start, int target)
+        {
+            int sum = 0;
+            foreach (var num in comb)
+            {
+                sum += num;
+            }
+            if (sum == target)
+            {
+                var newComb = new List<int>();
+                foreach (var num in comb)
+                {
+                    newComb.Add(num);
+                }
+                result.Add(newComb);
+                return;
+            }
+            else if (sum > target)
+            {
+                start++;
+                return;
+            }
+
+            for (int i = start; i < candidates.Length; i++)
+            {
+                comb.Add(candidates[i]);
+                R(result, candidates, comb, ref i, target);
+                comb.RemoveAt(comb.Count - 1);
+            }
+        }
+        #endregion
+
         #region 43. Multiply Strings
         //Given two non-negative integers num1 and num2 represented as strings, return the product of num1 and num2.
 
@@ -290,6 +371,118 @@ namespace LeetCode
                 max = max > maxToHere ? max : maxToHere;
             }
             return max;
+        }
+        #endregion
+
+        #region 54. Spiral Matrix
+        //Given a matrix of m x n elements(m rows, n columns), return all elements of the matrix in spiral order.
+
+        //For example,
+        //Given the following matrix:
+
+
+        //[
+        // [ 1, 2, 3 ],
+        //[ 4, 5, 6 ],
+        //[ 7, 8, 9 ]
+        //]
+        //You should return [1,2,3,6,9,8,7,4,5].
+        public static IList<int> SpiralOrder(int[,] matrix)
+        {
+            List<int> result = new List<int>();
+            int rowIndex = 0;
+            int columnIndex = 0;
+            bool RowOrColumn = false;
+            int round = 1;
+            while (result.Count != matrix.GetLength(0) * matrix.GetLength(1))
+            {
+                int AddOrMinus = ((round % 4) == 1 || (round % 4) == 2) ? 1 : -1;
+                result.Add(matrix[rowIndex, columnIndex]);
+                if (RowOrColumn)
+                {
+                    int nextRowIndex = rowIndex + 1 * AddOrMinus;
+                    if (nextRowIndex == matrix.GetLength(0) || nextRowIndex < 0 || result.Contains(matrix[nextRowIndex, columnIndex]))
+                    {
+                        RowOrColumn = !RowOrColumn;
+                        round++;
+                        int NextAddOrMinus = ((round % 4) == 1 || (round % 4) == 2) ? 1 : -1;
+                        columnIndex += 1 * NextAddOrMinus;
+                    }
+                    else
+                    {
+                        rowIndex = nextRowIndex;
+                    }
+                }
+                else
+                {
+                    int nextColumnIndex = columnIndex + 1 * AddOrMinus;
+                    if (nextColumnIndex == matrix.GetLength(1) || nextColumnIndex < 0 || result.Contains(matrix[rowIndex, nextColumnIndex]))
+                    {
+                        RowOrColumn = !RowOrColumn;
+                        round++;
+                        int NextAddOrMinus = ((round % 4) == 1 || (round % 4) == 2) ? 1 : -1;
+                        rowIndex += 1 * NextAddOrMinus;
+                    }
+                    else
+                    {
+                        columnIndex = nextColumnIndex;
+                    }
+                }
+            }
+            return result;
+        }
+        #endregion
+
+        #region 59. Spiral Matrix II
+        //Given an integer n, generate a square matrix filled with elements from 1 to n2 in spiral order.
+
+        //For example,
+        //Given n = 3,
+
+        //You should return the following matrix:
+        //[
+        // [ 1, 2, 3 ],
+        // [ 8, 9, 4 ],
+        // [ 7, 6, 5 ]
+        //]
+        public static int[,] GenerateMatrix(int n)
+        {
+            int[,] result = new int[n, n];
+            if (n == 0)
+                return result;
+            int num = 1; int round = 1;
+            result[0, 0] = num++;
+            fill(result, 0, 0, true, ref round, ref num);
+            return result;
+        }
+
+        public static void fill(int[,] result, int rowIndex, int columnIndex, bool rowOrColumn, ref int round, ref int num)
+        {
+            if (num > result.GetLength(0) * result.GetLength(1))
+                return;
+            int AddOrMinus = ((round % 4) == 1 || (round % 4) == 2) ? 1 : -1;
+            if (rowOrColumn)//add column
+            {
+                columnIndex += 1 * AddOrMinus;
+                while (columnIndex >= 0 && columnIndex < result.GetLength(1) && result[rowIndex, columnIndex] == 0)
+                {
+                    result[rowIndex, columnIndex] = num++;
+                    columnIndex += 1 * AddOrMinus;
+                }
+                round++;
+                fill(result, rowIndex, columnIndex - 1 * AddOrMinus, !rowOrColumn, ref round, ref num);
+            }
+            else
+            {
+                rowIndex += 1 * AddOrMinus;
+                while (rowIndex >= 0 && rowIndex < result.GetLength(0) && result[rowIndex, columnIndex] == 0)
+                {
+                    result[rowIndex, columnIndex] = num++;
+                    rowIndex += 1 * AddOrMinus;
+                }
+                round++;
+                fill(result, rowIndex - 1 * AddOrMinus, columnIndex, !rowOrColumn, ref round, ref num);
+            }
         }
         #endregion
 
@@ -1705,6 +1898,38 @@ namespace LeetCode
 
         }
         #endregion
+
+        #region 718. Maximum Length of Repeated Subarray
+        //Given two integer arrays A and B, return the maximum length of an subarray that appears in both arrays.
+
+        //Example 1:
+        //Input:
+        //A: [1,2,3,2,1]
+        //B: [3,2,1,4,7]
+        //Output: 3
+        //Explanation: 
+        //The repeated subarray with maximum length is [3, 2, 1].
+        //Note:
+        //1 <= len(A), len(B) <= 1000
+        //0 <= A[i], B[i] < 100
+        public static int FindLength(int[] A, int[] B)
+        {
+            int ans = 0;
+            int[,] memo = new int[A.Length + 1, B.Length + 1];
+            for (int i = A.Length - 1; i >= 0; --i)
+            {
+                for (int j = B.Length - 1; j >= 0; --j)
+                {
+                    if (A[i] == B[j])
+                    {
+                        memo[i, j] = memo[i + 1, j + 1] + 1;
+                        if (ans < memo[i, j]) ans = memo[i, j];
+                    }
+                }
+            }
+            return ans;
+        }
+        #endregion 
 
         #region 724. Find Pivot Index
         //Given an array of integers nums, write a method that returns the "pivot" index of this array.
