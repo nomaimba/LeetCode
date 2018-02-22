@@ -486,6 +486,50 @@ namespace LeetCode
         }
         #endregion
 
+        #region 64. Minimum Path Sum
+        //Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right which minimizes the sum of all numbers along its path.
+
+        //Note: You can only move either down or right at any point in time.
+
+        //Example 1:
+        //[[1,3,1],
+        // [1,5,1],
+        // [4,2,1]]
+        //Given the above grid map, return 7. Because the path 1→3→1→1→1 minimizes the sum.
+        public static int MinPathSum(int[,] grid)
+        {
+            int[,] result = new int[grid.GetLength(0), grid.GetLength(1)];
+            for (int i = 0; i < grid.GetLength(0); i++)
+            {
+                for (int j = 0; j < grid.GetLength(1); j++)
+                {
+                    result[i, j] = int.MaxValue;
+                }
+            }
+            result[0, 0] = grid[0, 0];
+            for (int i = 0; i < grid.GetLength(0); i++)
+            {
+                for (int j = 0; j < grid.GetLength(1); j++)
+                {
+                    if (result[i, j] != int.MaxValue)
+                        continue;
+                    int left = int.MaxValue;
+                    int top = int.MaxValue;
+                    if (i - 1 >= 0)
+                    {
+                        left = result[i - 1, j] + grid[i, j];
+                    }
+                    if (j - 1 >= 0)
+                    {
+                        top = result[i, j - 1] + grid[i, j];
+                    }
+                    result[i, j] = left < top ? left : top;
+                }
+            }
+            return result[grid.GetLength(0) - 1, grid.GetLength(1) - 1];
+        }
+        #endregion
+
         #region 66. Plus One
         //Given a non-negative integer represented as a non-empty array of digits, plus one to the integer.
 
@@ -733,6 +777,26 @@ namespace LeetCode
             return ans;
         }
         #endregion
+
+        #region 153. Find Minimum in Rotated Sorted Array
+        //Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
+
+        //(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).
+
+        //Find the minimum element.
+
+        //You may assume no duplicate exists in the array.
+        public static int FindMin(int[] nums)
+        {
+            for (int i = 1; i < nums.Length; i++)
+            {
+                if (nums[i] < nums[i - 1])
+                    return nums[i];
+            }
+            return nums[0];
+        }
+        #endregion
+
 
         #region 167. Two Sum II - Input array is sorted
         //Given an array of integers that is already sorted in ascending order, find two numbers such that they add up to a specific target number.
