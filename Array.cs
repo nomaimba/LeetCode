@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace LeetCode
 {
@@ -245,6 +245,55 @@ namespace LeetCode
         }
         #endregion
 
+        #region 38 Count and Say
+        //The count-and-say sequence is the sequence of integers with the first five terms as following:
+
+        //1.     1
+        //2.     11
+        //3.     21
+        //4.     1211
+        //5.     111221
+        //1 is read off as "one 1" or 11.
+        //11 is read off as "two 1s" or 21.
+        //21 is read off as "one 2, then one 1" or 1211.
+        //Given an integer n, generate the nth term of the count-and-say sequence.
+
+        //Note: Each term of the sequence of integers will be represented as a string.
+        public static string CountAndSay(int n)
+        {
+            String result = "1";
+            n = n - 1;
+            while (n > 0)
+            {
+                result = CountAndSayParse(result);
+                n--;
+            }
+            return result;
+        }
+
+        public static string CountAndSayParse(string s)
+        {
+            var sb = new StringBuilder();
+            char previous = s[0];
+            int count = 1;
+            for (int i = 1; i < s.Length; i++)
+            {
+                if (s[i] != previous)
+                {
+                    sb.Append(string.Format("{0}{1}", count.ToString(), previous.ToString()));
+                    previous = s[i];
+                    count = 1;
+                }
+                else
+                {
+                    count++;
+                }
+            }
+            sb.Append(string.Format("{0}{1}", count.ToString(), previous.ToString()));
+            return sb.ToString();
+        }
+        #endregion
+
         #region 39. Combination Sum
         //Given a set of candidate numbers(C) (without duplicates) and a target number(T), find all unique combinations in C where the candidate numbers sums to T.
 
@@ -299,6 +348,93 @@ namespace LeetCode
                 R(result, candidates, comb, ref i, target);
                 comb.RemoveAt(comb.Count - 1);
             }
+        }
+        #endregion
+
+        #region 40. Combination Sum II
+        //Given a collection of candidate numbers(C) and a target number(T), find all unique combinations in C where the candidate numbers sums to T.
+
+        //Each number in C may only be used once in the combination.
+
+
+        //Note:
+        //All numbers (including target) will be positive integers.
+        //The solution set must not contain duplicate combinations.
+        //For example, given candidate set[10, 1, 2, 7, 6, 1, 5] and target 8,
+        //A solution set is: 
+        //[
+        //  [1, 7],
+        //[1, 2, 5],
+        //[2, 6],
+        //[1, 1, 6]
+        //]
+        public static IList<IList<int>> CombinationSum2(int[] candidates, int target)
+        {
+            var result = new List<IList<int>>();
+            var currents = new List<int>();
+            Array.Sort(candidates);
+            CombinationSum2Rec(result, currents, 0, target, candidates);
+            return result;
+        }
+
+        public static void CombinationSum2Rec(List<IList<int>> result, List<int> currents, int start, int target, int[] candidates)
+        {
+            int sum = 0;
+            foreach (var c in currents)
+            {
+                sum += c;
+            }
+            if (sum == target)
+            {
+
+                List<int> newMatch = new List<int>();
+                foreach (var c in currents)
+                {
+                    newMatch.Add(c);
+                }
+                newMatch.Sort();
+                if (!Duplicated(result, newMatch))
+                    result.Add(newMatch);
+                return;
+            }
+            else if (sum > target)
+            {
+                return;
+            }
+
+            for (int i = start; i < candidates.Length; i++)
+            {
+                currents.Add(candidates[i]);
+                CombinationSum2Rec(result, currents, i + 1, target, candidates);
+                currents.RemoveAt(currents.Count - 1);
+            }
+        }
+
+        public static bool Duplicated(List<IList<int>> result, List<int> currents)
+        {
+            foreach (var match in result)
+            {
+                var tempResult = true;
+                if (match.Count == currents.Count)
+                {
+                    for (int i = 0; i < match.Count; i++)
+                    {
+                        if (match[i] != currents[i])
+                        {
+                            tempResult = false;
+                            break;
+                        }
+
+                    }
+                }
+                else
+                {
+                    tempResult = false;
+                }
+                if (tempResult)
+                    return true;
+            }
+            return false;
         }
         #endregion
 
@@ -562,6 +698,79 @@ namespace LeetCode
         }
         #endregion
 
+        #region 73. Set Matrix Zeroes
+        //Given a m x n matrix, if an element is 0, set its entire row and column to 0. Do it in place.
+        public static void SetZeroes(int[,] matrix)
+        {
+            List<int> rows = new List<int>();
+            List<int> columns = new List<int>();
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < matrix.GetLength(1); j++)
+                {
+                    if (matrix[i, j] == 0)
+                    {
+                        if (!rows.Contains(i))
+                        {
+                            rows.Add(i);
+                        }
+                        if (!columns.Contains(j))
+                        {
+                            columns.Add(j);
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                foreach (var column in columns)
+                {
+                    matrix[i, column] = 0;
+                }
+            }
+            for (int j = 0; j < matrix.GetLength(1); j++)
+            {
+                foreach (var row in rows)
+                {
+                    matrix[row, j] = 0;
+                }
+            }
+        }
+        #endregion
+
+        #region 75. Sort Colors
+        //Given an array with n objects colored red, white or blue, sort them so that objects of the same color are adjacent, with the colors in the order red, white and blue.
+
+        //Here, we will use the integers 0, 1, and 2 to represent the color red, white, and blue respectively.
+        public static void SortColors(int[] nums)
+        {
+            int count0 = 0;
+            int count1 = 0;
+            int count2 = 0;
+            foreach (var num in nums)
+            {
+                if (num == 0)
+                    count0++;
+                else if (num == 1)
+                    count1++;
+                else
+                    count2++;
+            }
+            for (int i = 0; i < count0; i++)
+            {
+                nums[i] = 0;
+            }
+            for (int i = 0; i < count1; i++)
+            {
+                nums[i + count0] = 1;
+            }
+            for (int i = 0; i < count2; i++)
+            {
+                nums[i + count0 + count1] = 2;
+            }
+        }
+        #endregion
+
         #region 78. Subsets
         //Given a set of distinct integers, nums, return all possible subsets(the power set).
 
@@ -610,6 +819,39 @@ namespace LeetCode
                 AddSubSets(result, subSet, i + 1, count, nums);
                 subSet.RemoveAt(subSet.Count - 1);
             }
+        }
+        #endregion
+
+        #region 80. Remove Duplicates from Sorted Array II
+        //Follow up for "Remove Duplicates":
+        //What if duplicates are allowed at most twice?
+
+        //For example,
+        //Given sorted array nums = [1,1,1,2,2,3],
+
+        //Your function should return length = 5, with the first five elements of nums being 1, 1, 2, 2 and 3. It doesn't matter what you leave beyond the new length.
+        public static int RemoveDuplicates(int[] nums)
+        {
+            int previous = -1;
+            int count = 0;
+            int result = 0;
+            int index = 0;
+            foreach (var num in nums)
+            {
+                if (num == previous)
+                    count++;
+                else
+                {
+                    count = 0;
+                }
+                if (count < 2)
+                {
+                    nums[index++] = num;
+                    result++;
+                }
+                previous = num;
+            }
+            return result;
         }
         #endregion
 
@@ -797,6 +1039,32 @@ namespace LeetCode
         }
         #endregion
 
+        #region 162. Find Peak Element
+        //A peak element is an element that is greater than its neighbors.
+
+        //Given an input array where num[i] ≠ num[i + 1], find a peak element and return its index.
+
+        //The array may contain multiple peaks, in that case return the index to any one of the peaks is fine.
+
+        //You may imagine that num[-1] = num[n] = -∞.
+
+        //For example, in array[1, 2, 3, 1], 3 is a peak element and your function should return the index number 2.
+        public static int FindPeakElement(int[] nums)
+        {
+            if (nums.Length == 1)
+                return 0;
+            if (nums[0] > nums[1])
+                return 0;
+            else if (nums[nums.Length - 1] > nums[nums.Length - 2])
+                return nums.Length - 1;
+            for (int i = 1; i < nums.Length - 1; i++)
+            {
+                if (nums[i] > nums[i - 1] && nums[i] > nums[i + 1])
+                    return i;
+            }
+            return 0;
+        }
+        #endregion
 
         #region 167. Two Sum II - Input array is sorted
         //Given an array of integers that is already sorted in ascending order, find two numbers such that they add up to a specific target number.
@@ -1088,6 +1356,134 @@ namespace LeetCode
                     nums[nums.Length - 1 - count] = 0;
                     count++;
                 }
+            }
+        }
+        #endregion
+
+        #region 380. Insert Delete GetRandom O(1)
+        //Design a data structure that supports all following operations in average O(1) time.
+
+        //insert(val): Inserts an item val to the set if not already present.
+        //remove(val): Removes an item val from the set if present.
+        //getRandom: Returns a random element from current set of elements.Each element must have the same probability of being returned.
+        public class RandomizedSet
+        {
+
+            /** Initialize your data structure here. */
+            public RandomizedSet()
+            {
+
+            }
+            Random ra = new Random(unchecked((int)DateTime.Now.Ticks));
+            ArrayList nums = new ArrayList();
+            Dictionary<int, int> dic = new Dictionary<int, int>();
+            /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+            public bool Insert(int val)
+            {
+                if (this.dic.ContainsKey(val))
+                    return false;
+                else
+                {
+                    nums.Add(val);
+                    dic[val] = nums.Count;
+                    return true;
+                }
+            }
+
+            /** Removes a value from the set. Returns true if the set contained the specified element. */
+            public bool Remove(int val)
+            {
+                if (this.dic.ContainsKey(val))
+                {
+                    dic.Remove(val);
+                    nums.Remove(val);
+                    return true;
+                }
+
+                else
+                {
+                    return false;
+                }
+            }
+
+            /** Get a random element from the set. */
+            public int GetRandom()
+            {
+                int index = ra.Next(nums.Count);
+                return (int)(nums[index]);
+            }
+        }
+
+        #endregion
+
+        #region 381. Insert Delete GetRandom O(1) - Duplicates allowed
+        //Design a data structure that supports all following operations in average O(1) time.
+
+        //Note: Duplicate elements are allowed.
+        //insert(val): Inserts an item val to the collection.
+        //remove(val): Removes an item val from the collection if present.
+        //getRandom: Returns a random element from current collection of elements.The probability of each element being returned is linearly related to the number of same value the collection contains.
+        public class RandomizedCollection
+        {
+
+            /** Initialize your data structure here. */
+            public RandomizedCollection()
+            {
+
+            }
+            Random ra = new Random(unchecked((int)DateTime.Now.Ticks));
+            ArrayList nums = new ArrayList();
+            Dictionary<int, int> dic = new Dictionary<int, int>();
+            /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+            public bool Insert(int val)
+            {
+
+                if (this.dic.ContainsKey(val))
+                {
+                    nums.Add(val);
+                    dic[val] = dic[val] + 1;
+                    return false;
+                }
+                else
+                {
+                    nums.Add(val);
+                    dic[val] = 1;
+                    return true;
+                }
+            }
+
+            /** Removes a value from the set. Returns true if the set contained the specified element. */
+            public bool Remove(int val)
+            {
+                if (this.dic.ContainsKey(val))
+                {
+                    dic[val] = dic[val] - 1;
+                    if (dic[val] == 0)
+                        dic.Remove(val);
+                    int index = -1;
+                    for (int i = 0; i < nums.Count; i++)
+                    {
+                        if ((int)nums[i] == val)
+                        {
+                            index = i;
+                            break;
+                        }
+                    }
+                    nums.RemoveAt(index);
+                    return true;
+                }
+
+                else
+                {
+                    return false;
+                }
+            }
+
+            /** Get a random element from the set. */
+            public int GetRandom()
+            {
+                int index = ra.Next(nums.Count);
+                return (int)(nums[index]);
             }
         }
         #endregion
@@ -1743,6 +2139,81 @@ namespace LeetCode
             for (int i = 0, l = 1, r = n; l <= r; i++)
                 res[i] = k > 1 ? (k-- % 2 != 0 ? l++ : r--) : l++;
             return res;
+        }
+        #endregion
+
+        #region 670. Maximum Swap
+        //Given a non-negative integer, you could swap two digits at most once to get the maximum valued number.Return the maximum valued number you could get.
+
+        //Example 1:
+        //Input: 2736
+        //Output: 7236
+        //Explanation: Swap the number 2 and the number 7.
+        //Example 2:
+        //Input: 9973
+        //Output: 9973
+        //Explanation: No swap.
+        //Note:
+        //The given number is in the range [0, 108]
+        public static int MaximumSwap(int num)
+        {
+            bool needSwap = false;
+            String numS = num.ToString();
+            int max = -1;
+            int changeIndex = -1;
+            int maxIndex = -1;
+            for (int i = 1; i < numS.Length; i++)
+            {
+                int current = int.Parse(numS[i].ToString());
+                if (!needSwap)
+                {
+                    int before = int.Parse(numS[i - 1].ToString());
+                    if (current > before)
+                    {
+                        needSwap = true;
+                        max = current;
+                        maxIndex = i;
+                        changeIndex = i - 1;
+                    }
+                }
+                if (needSwap)
+                {
+                    if (current >= max)
+                    {
+                        max = current;
+                        maxIndex = i;
+                    }
+                }
+
+            }
+            if (needSwap)
+            {
+                for (int j = changeIndex; j >= 0; j--)
+                {
+                    int v = int.Parse(numS[j].ToString());
+                    if (v < max)
+                        changeIndex = j;
+                }
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < numS.Length; i++)
+                {
+                    if (i == maxIndex)
+                    {
+                        sb.Append(numS[changeIndex]);
+                    }
+                    else if (i == changeIndex)
+                    {
+                        sb.Append(max.ToString());
+                    }
+                    else
+                    {
+                        sb.Append(numS[i]);
+                    }
+                }
+                return int.Parse(sb.ToString());
+            }
+            else
+                return num;
         }
         #endregion
 
