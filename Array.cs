@@ -195,6 +195,73 @@ namespace LeetCode
         }
         #endregion
 
+        #region 34. Search for a Range
+        //Given an array of integers sorted in ascending order, find the starting and ending position of a given target value.
+
+        //Your algorithm's runtime complexity must be in the order of O(log n).
+
+        //If the target is not found in the array, return [-1, -1].
+
+        //For example,
+        //Given[5, 7, 7, 8, 8, 10] and target value 8,
+        //return [3, 4].
+        public static int[] SearchRange(int[] nums, int target)
+        {
+            int[] result = new int[2];
+            result[0] = -1;
+            result[1] = -1;
+            if (nums.Length == 0)
+                return result;
+            else if (nums.Length == 1)
+            {
+                if (nums[0] == target)
+                {
+                    result[0] = 0;
+                    result[1] = 0;
+                }
+                return result;
+            }
+            int l = 0;
+            int r = nums.Length - 1;
+            int index = -1;
+            while (l <= r)
+            {
+                int mid = (l + r) / 2;
+                if (nums[mid] > target)
+                    r = mid - 1;
+                else if (nums[mid] < target)
+                    l = mid + 1;
+                else
+                {
+                    index = mid;
+                    break;
+                }
+            }
+            if (index != -1)
+            {
+                int leftIndex = index;
+                while (leftIndex >= 0)
+                {
+                    if (nums[leftIndex] == target)
+                        leftIndex--;
+                    else
+                        break;
+                }
+                int rightIndex = index;
+                while (rightIndex < nums.Length)
+                {
+                    if (nums[rightIndex] == target)
+                        rightIndex++;
+                    else
+                        break;
+                }
+                result[0] = leftIndex + 1;
+                result[1] = rightIndex - 1;
+            }
+            return result;
+        }
+        #endregion
+
         #region 35. Search Insert Position
         //Given a sorted array and a target value, return the index if the target is found.If not, return the index where it would be if it were inserted in order.
 
@@ -738,6 +805,40 @@ namespace LeetCode
         }
         #endregion
 
+        #region 74. Search a 2D Matrix
+        //Write an efficient algorithm that searches for a value in an m x n matrix.This matrix has the following properties:
+
+        //Integers in each row are sorted from left to right.
+        //The first integer of each row is greater than the last integer of the previous row.
+        //For example,
+
+        //Consider the following matrix:
+
+        //[
+        //  [1,   3,  5,  7],
+        //  [10, 11, 16, 20],
+        //  [23, 30, 34, 50]
+        //]
+        //Given target = 3, return true.
+        public static bool SearchMatrix(int[,] matrix, int target)
+        {
+            int n = matrix.GetLength(0);
+            int m = matrix.GetLength(1);
+            if (n == 0 || m == 0)
+                return false;
+            int l = 0, r = m * n - 1;
+            while (l != r)
+            {
+                int mid = (l + r - 1) >> 1;
+                if (matrix[mid / m, mid % m] < target)
+                    l = mid + 1;
+                else
+                    r = mid;
+            }
+            return matrix[r / m, r % m] == target;
+        }
+        #endregion
+
         #region 75. Sort Colors
         //Given an array with n objects colored red, white or blue, sort them so that objects of the same color are adjacent, with the colors in the order red, white and blue.
 
@@ -830,7 +931,7 @@ namespace LeetCode
         //Given sorted array nums = [1,1,1,2,2,3],
 
         //Your function should return length = 5, with the first five elements of nums being 1, 1, 2, 2 and 3. It doesn't matter what you leave beyond the new length.
-        public static int RemoveDuplicates(int[] nums)
+        public static int RemoveDuplicatesII(int[] nums)
         {
             int previous = -1;
             int count = 0;
@@ -868,6 +969,89 @@ namespace LeetCode
         }
 
         #endregion
+
+        #region 90. Subsets II
+        //Given a collection of integers that might contain duplicates, nums, return all possible subsets(the power set).
+
+        //Note: The solution set must not contain duplicate subsets.
+
+        //For example,
+        //If nums = [1, 2, 2], a solution is:
+
+        //[
+        //  [2],
+        //  [1],
+        //  [1,2,2],
+        //  [2,2],
+        //  [1,2],
+        //  []
+        //]
+        public static IList<IList<int>> SubsetsWithDup(int[] nums)
+        {
+            var result = new List<IList<int>>();
+            Array.Sort(nums);
+            for (int count = 0; count <= nums.Length; count++)
+            {
+                var subSet = new List<int>();
+                AddSubSetsDup(result, subSet, 0, count, nums);
+            }
+            return result;
+        }
+
+        public static void AddSubSetsDup(IList<IList<int>> result, List<int> subSet, int start, int count, int[] nums)
+        {
+            if (subSet.Count == count)
+            {
+                var subResult = new List<int>();
+                subSet.Sort();
+                if (isDuplicateDup(result, subSet))
+                    return;
+                foreach (var num in subSet)
+                {
+                    subResult.Add(num);
+                }
+                result.Add(subResult);
+                return;
+            }
+
+            for (int i = start; i < nums.Length; i++)
+            {
+                subSet.Add(nums[i]);
+                AddSubSetsDup(result, subSet, i + 1, count, nums);
+                subSet.RemoveAt(subSet.Count - 1);
+            }
+        }
+
+        public static bool isDuplicateDup(IList<IList<int>> result, IList<int> subSet)
+        {
+            var duplicate = false;
+            foreach (var set in result)
+            {
+                if (set.Count == subSet.Count)
+                {
+                    bool isNotEqual = false;
+                    for (int i = 0; i < set.Count; i++)
+                    {
+                        if (set[i] != subSet[i])
+                        {
+                            isNotEqual = true;
+                            break;
+                        }
+                    }
+                    if (!isNotEqual)
+                    {
+                        duplicate = true;
+                        break;
+                    }
+                }
+                else
+                {
+
+                }
+            }
+            return duplicate;
+        }
+        #endregion 
 
         #region 118. Pascal's Triangle
         //Given numRows, generate the first numRows of Pascal's triangle.
@@ -951,6 +1135,21 @@ namespace LeetCode
             return result;
         }
         #endregion
+
+        #region 120. Triangle
+        public static int MinimumTotal(IList<IList<int>> triangle)
+        {
+            int[] A = new int[triangle.Count + 1];
+            for (int i = triangle.Count - 1; i >= 0; i--)
+            {
+                for (int j = 0; j < triangle[i].Count; j++)
+                {
+                    A[j] = (A[j] < A[j + 1] ? A[j] : A[j + 1]) + triangle[i][j];
+                }
+            }
+            return A[0];
+        }
+        #endregion 
 
         #region 121. Best Time to Buy and Sell Stock
         //Say you have an array for which the ith element is the price of a given stock on day i.
